@@ -1,0 +1,7 @@
+"Dataset","Method","logZ","Runtime","Ncall","Converged"
+"Pima (d = 9)","Nested Sampling (dynesty)","-387.49 ± 0.28","27.5 ± 1.2","252566","30/30"
+"Pima (d = 9)","Bridge Sampling","-387.50 ± 0.00","8.5 ± 0.2","20000","30/30"
+"CreditCard (d = 29)","Nested Sampling (dynesty)","-96.95 ± 0.68","147.6 ± 4.1","752203","30/30"
+"CreditCard (d = 29)","Bridge Sampling","-98.73 ± 0.01","8.1 ± 0.9","20000","30/30"
+"TCGA (d = 61)","Nested Sampling (dynesty)","-57.57 ± 2.82","126.3 ± 7.0","667975","30/30"
+"TCGA (d = 61)","Bridge Sampling","-72.45 ± 0.03","16.3 ± 2.4","25000","30/30"
