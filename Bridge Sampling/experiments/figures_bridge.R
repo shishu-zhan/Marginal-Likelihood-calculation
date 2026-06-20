@@ -33,14 +33,26 @@ load_runs <- function(dataset) {
 
 all_runs <- do.call(rbind, lapply(datasets, load_runs))
 all_runs$Dataset <- factor(all_runs$Dataset, levels = labels)
+all_runs_rt <- all_runs
+tcga_outliers <- all_runs_rt$Dataset == "TCGA (d = 61)" & all_runs_rt$runtime > 1000
+all_runs_rt$runtime[tcga_outliers] <- NA
+all_runs_rt$hmc_runtime[tcga_outliers] <- NA
 
 summ <- all_runs %>%
   group_by(Dataset) %>%
   summarise(
     mean_logZ  = mean(logz),
     sd_logZ    = sd(logz),
-    mean_runtime = mean(runtime),
-    sd_runtime = sd(runtime),
+    .groups = "drop"
+  )
+
+summ_rt <- all_runs_rt %>%
+  group_by(Dataset) %>%
+  summarise(
+    median_runtime = median(runtime, na.rm = TRUE),
+    mad_runtime    = mad(runtime, na.rm = TRUE),
+    mean_hmc_rt    = mean(hmc_runtime, na.rm = TRUE),
+    mean_bs_rt     = mean(bs_runtime, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -74,22 +86,24 @@ p1 <- ggplot(summ, aes(x = Dataset, y = mean_logZ, fill = Dataset)) +
     legend.position   = "none"
   )
 
-lollipop_col <- c("Pima (d = 9)"        = "#A8DADC",
-                  "CreditCard (d = 29)" = "#457B9D",
-                  "TCGA (d = 61)"       = "#1D3557")
+runtime_long <- all_runs_rt %>%
+  select(Dataset, hmc_runtime, bs_runtime) %>%
+  tidyr::pivot_longer(cols = c(hmc_runtime, bs_runtime),
+                      names_to = "Phase", values_to = "Runtime") %>%
+  mutate(Phase = recode(Phase,
+                        hmc_runtime = "HMC Sampling",
+                        bs_runtime  = "Bridge Iteration"))
 
-p2 <- ggplot(summ, aes(x = Dataset, y = mean_runtime, colour = Dataset)) +
-  geom_segment(aes(xend = Dataset, y = 1, yend = mean_runtime),
-               linewidth = 1.5, alpha = 0.8) +
-  geom_point(size = 5.5) +
-  geom_point(size = 2.2, colour = "white") +
-  geom_text(aes(label = sprintf("%.1fs", mean_runtime)),
-            vjust = -1.2, size = 3.5, fontface = "bold",
-            family = FONT) +
-  scale_colour_manual(values = lollipop_col) +
-  scale_y_log10(expand = expansion(mult = c(0.08, 0.25))) +
-  labs(x = NULL, y = "Runtime (seconds, log scale)",
-       title = "Computational Cost of Bridge Sampling") +
+ggplot2_colors <- c("HMC Sampling" = "#A8DADC", "Bridge Iteration" = "#E63946")
+
+p2 <- ggplot(runtime_long, aes(x = Dataset, y = Runtime, fill = Phase)) +
+  stat_summary(fun = median, geom = "bar", width = 0.55,
+               position = position_stack(), color = "#333333", linewidth = 0.3) +
+  scale_fill_manual(values = ggplot2_colors) +
+  labs(x = NULL, y = "Runtime (seconds)",
+       title = "Total Computational Cost of Bridge Sampling",
+       fill = NULL) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.08))) +
   theme_minimal(base_family = FONT) +
   theme(
     panel.grid.major.x = element_blank(),
@@ -98,11 +112,12 @@ p2 <- ggplot(summ, aes(x = Dataset, y = mean_runtime, colour = Dataset)) +
     panel.background   = element_rect(fill = "white", colour = NA),
     plot.background    = element_rect(fill = "white", colour = NA),
     axis.line         = element_line(linewidth = 0.6, colour = "black"),
-    axis.text         = element_text(size = 11, colour = "black", face = "bold"),
-    axis.title.y      = element_text(size = 12, face = "bold"),
+    axis.text         = element_text(size = 11, colour = "black"),
+    axis.title.y      = element_text(size = 12),
     plot.title        = element_text(size = 13, face = "bold", hjust = 0.5,
                                      margin = margin(b = 10)),
-    legend.position   = "none"
+    legend.position   = "top",
+    legend.text       = element_text(size = 10, family = FONT)
   )
 
 stab_col <- c("Pima (d = 9)"        = "#94d8da",
