@@ -1,5 +1,6 @@
 METRIC_KEYS <- c("logz", "logzerr", "H", "runtime", "ncall", "n_iter",
-                 "eff_nlive", "nlive_used", "seed", "converged")
+                 "eff_nlive", "nlive_used", "seed", "converged",
+                 "hmc_runtime", "bs_runtime", "hmc_ncall")
 
 save_run <- function(dataset, run_id, metrics, phase_dir) {
   out_dir <- file.path(RESULTS_DIR, "bridge_sampling", dataset, phase_dir)
