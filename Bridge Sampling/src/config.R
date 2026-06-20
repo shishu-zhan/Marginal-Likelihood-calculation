@@ -4,6 +4,7 @@ if (!exists("PROJECT_ROOT")) {
 
 DATA_DIR      <- file.path(PROJECT_ROOT, "data preprocessing")
 POSTERIOR_DIR <- file.path(PROJECT_ROOT, "bayes logistic regression")
+HMC_RUNS_DIR  <- file.path(POSTERIOR_DIR, "hmc_runs")
 RESULTS_DIR   <- file.path(PROJECT_ROOT, "Bridge Sampling", "results")
 
 PRIOR_VAR <- 10.0
