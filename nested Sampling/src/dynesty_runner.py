@@ -4,7 +4,7 @@ import dynesty
 from .model import make_loglike, make_prior_transform
 
 
-def run_dynesty(X, y, ndim, nlive=500, sample='rwalk', walks=50,
+def run_dynesty(X, y, ndim, nlive=500, sample='rslice', walks=None,
                 dlogz=0.5, maxcall=None, seed=None):
     loglike = make_loglike(X, y)
     ptform = make_prior_transform(ndim)
@@ -12,12 +12,15 @@ def run_dynesty(X, y, ndim, nlive=500, sample='rwalk', walks=50,
     if seed is not None:
         np.random.seed(seed)
 
+    sampler_kwargs = dict(
+        nlive=nlive, bound='multi', sample=sample,
+    )
+    if sample in ('rwalk', 'rstagger') and walks is not None:
+        sampler_kwargs['walks'] = walks
+
     sampler = dynesty.NestedSampler(
         loglike, ptform, ndim,
-        nlive=nlive,
-        bound='multi',
-        sample=sample,
-        walks=walks,
+        **sampler_kwargs,
     )
 
     t0 = time.perf_counter()

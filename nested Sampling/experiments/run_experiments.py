@@ -22,7 +22,7 @@ def run_single(method, dataset, X, y, ndim, param_names, seed):
             X, y, ndim,
             nlive=cfg['nlive'],
             sample=cfg['sample'],
-            walks=cfg['walks'],
+            walks=cfg.get('walks'),
             dlogz=cfg['dlogz'],
             maxcall=cfg['maxcall'],
             seed=seed,

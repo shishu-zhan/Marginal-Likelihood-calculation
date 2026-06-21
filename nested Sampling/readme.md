@@ -109,24 +109,7 @@ y_i \sim \text{Bernoulli}(p_i), \quad p_i = \frac{1}{1 + \exp(-x_i^T \beta)}
 - **输入**：`log_likelihood(beta)`, `log_prior(beta)`
 - **输出**：`logZ`（对数边际似然估计），`logZ_error`（误差预算），`H`（KL 信息量），`runtime`，`ESS`（有效样本量，仅部分库输出）
 
-### 4.2 方法二：基于 MCMC 的边际似然估计（MCMC‑based）
 
-- **原理**：首先使用 MCMC（具体采用 **哈密顿蒙特卡洛 HMC**）从后验分布 \( p(\beta|y) \) 中采集大量样本。然后采用 **谐波均值估计（Harmonic Mean Estimator）** 计算边际似然：
-
-\[
-\hat{p}(y) = \left[ \frac{1}{N} \sum_{i=1}^{N} \frac{1}{p(y|\beta^{(i)})} \right]^{-1}
-\]
-
-  该估计量仅依赖于后验样本和似然函数，无需额外提议分布。虽然方差较大且可能不稳定，但作为与嵌套采样的对比基准具有教学意义。
-
-- **实现步骤**：
-  1. 运行 HMC 获得后验样本 \( \{\beta^{(1)}, ..., \beta^{(N)}\} \)。
-  2. 计算每个样本的似然 \( p(y|\beta^{(i)}) \)。
-  3. 按谐波均值公式计算 \( \log \hat{p}(y) \)。
-- **输入**：`log_likelihood`, `log_prior`, `grad_log_posterior`（用于 HMC）
-- **输出**：`logZ`（对数边际似然估计），`runtime`（包括 HMC 采样时间），`ESS`（HMC 的有效样本量）
-
-> **注意**：谐波均值估计已知存在方差无穷大的问题，但在高维下仍可提供粗略对比。为了更稳健的对比，也可考虑 **拉普拉斯近似** 或 **重要性采样**，但为保持与“仅 MCMC”对应，本实验仍采用谐波均值。
 
 ---
 

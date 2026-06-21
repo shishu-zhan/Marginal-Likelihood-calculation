@@ -1,0 +1,10 @@
+Method,Dataset,Dimension,logZ_mean,logZ_sigma,H,Theory_sigma,Efficiency,N_eff,Runtime_s,N_call,Sampler,Converged,Notes
+NS,Pima,9,-387.487,0.283,26.52,0.297,0.95,331,27.5,252566,rwalk walks=30 nlive=300,30/30,
+NS,CreditCard,29,-95.478,0.655,42.29,0.325,2.01,99,154.5,774786,rwalk walks=40 nlive=400,24/24,29d aligned with BS/HMC
+NS,TCGA,61,-61.843,0.622,58.66,0.484,1.28,151,1127.8,5302578,rslice nlive=250,24/24,
+BS,Pima,9,-387.506,0.0129,,,,,17.6,152000,HMC+bridge,30/30,HMC:132000 BS:20000
+BS,CreditCard,29,-98.757,0.0208,,,,,76.8,189000,HMC+bridge,30/30,HMC:169000 BS:20000
+BS,TCGA,61,-72.585,0.0475,,,,,160.8,285000,HMC+bridge,30/30,HMC:260000 BS:25000
+AIS-HMC,Pima,9,-388.570,1.255,,,,,44.9,548900,AIS with HMC,30/30,49900 transfers ESS=2.86/100
+AIS-HMC,CreditCard,29,-99.852,1.444,,,,,31.3,548900,AIS with HMC,30/30,49900 transfers ESS=3.40/100
+AIS-HMC,TCGA,61,-86.885,4.273,,,,,687.2,3196800,AIS with HMC,30/30,199800 transfers ESS=1.61/200

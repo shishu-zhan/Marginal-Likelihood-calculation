@@ -1,0 +1,17 @@
+## V1: Static NestedSampler + rwalk (runs=30)
+## Key problem: rwalk fails at d=61, TCGA logZ_std=2.82 (BF uncertainty ~17x)
+
+| param | pima | creditcard | tcga |
+|-------|------|-----------|------|
+| sampler | NestedSampler | NestedSampler | NestedSampler |
+| sample | rwalk | rwalk | rwalk |
+| walks | 30 | 30 | 30 |
+| dlogz | 0.8 | 0.5 | 0.5 |
+| nlive | 300 | 500 | 400 |
+| bound | multi | multi | multi |
+| maxcall | 500000 | 3000000 | 3000000 |
+
+V1 results:
+- pima:  logZ = -387.49 +- 0.28
+- creditcard: logZ = -96.95 +- 0.68
+- tcga:  logZ = -57.57 +- 2.82  <-- FAILS (eff_nlive=202/400, BF uncertainty ~17x)

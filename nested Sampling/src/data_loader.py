@@ -13,8 +13,9 @@ DATASETS = {
     },
     'creditcard': {
         'file': 'creditcard_preprocessed.csv',
-        'label': '中维CreditCard (d=30)',
-        'ndim': 30,
+        'label': '中维CreditCard (d=29)',
+        'ndim': 29,
+        'drop_col': 'Amount',
     },
     'tcga': {
         'file': 'tcga_preprocessed.csv',
@@ -29,7 +30,11 @@ def load_dataset(name):
     path = os.path.join(DATA_DIR, info['file'])
     df = pd.read_csv(path)
     y = df['y'].values.astype(np.int64)
+    col_names = list(df.columns[1:])
     X = df.iloc[:, 1:].values.astype(np.float64)
+    if info.get('drop_col'):
+        drop_idx = col_names.index(info['drop_col'])
+        X = np.delete(X, drop_idx, axis=1)
     return X, y, info
 
 
@@ -38,4 +43,6 @@ def get_param_names(name):
     path = os.path.join(DATA_DIR, info['file'])
     df = pd.read_csv(path, nrows=1)
     param_names = list(df.columns[1:])
+    if info.get('drop_col'):
+        param_names.remove(info['drop_col'])
     return param_names

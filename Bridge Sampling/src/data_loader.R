@@ -13,10 +13,20 @@ load_dataset <- function(name) {
   list(X = X, y = y, info = info)
 }
 
-load_posterior_samples <- function(name) {
-  info <- DATASETS[[name]]
-  path <- file.path(POSTERIOR_DIR, info$posterior)
+load_posterior_samples <- function(name, run_id = NULL) {
+  if (!is.null(run_id)) {
+    path <- file.path(HMC_RUNS_DIR, name, sprintf("run_%03d.csv", run_id))
+  } else {
+    info <- DATASETS[[name]]
+    path <- file.path(POSTERIOR_DIR, info$posterior)
+  }
   as.matrix(read.csv(path))
+}
+
+load_hmc_metadata <- function(name) {
+  path <- file.path(HMC_RUNS_DIR, "hmc_metadata.csv")
+  meta_all <- read.csv(path)
+  meta_all[meta_all$dataset == name, ]
 }
 
 load_ground_truth <- function(method, dataset, phase_dir) {

@@ -17,9 +17,9 @@ METHOD_LIST = ['dynesty', 'ultranest']
 
 METHOD_CONFIG = {
     'dynesty': {
-        'pima':       {'nlive': 300, 'sample': 'rwalk', 'walks': 30, 'dlogz': 0.8, 'maxcall': 500000},
-        'creditcard': {'nlive': 500, 'sample': 'rwalk', 'walks': 30, 'dlogz': 0.5, 'maxcall': 3000000},
-        'tcga':       {'nlive': 400, 'sample': 'rwalk', 'walks': 30, 'dlogz': 0.5, 'maxcall': 3000000},
+        'pima':       {'nlive': 150, 'sample': 'rwalk', 'walks': 30, 'dlogz': 0.5, 'maxcall': 1000000},
+        'creditcard': {'nlive': 400, 'sample': 'rwalk', 'walks': 40, 'dlogz': 0.5, 'maxcall': 3000000},
+        'tcga':       {'nlive': 250, 'sample': 'rslice',               'dlogz': 0.5, 'maxcall': 8000000},
     },
     'ultranest': {
         'pima': {'min_live': 400, 'min_ess': 400},

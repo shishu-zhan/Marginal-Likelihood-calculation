@@ -1,0 +1,20 @@
+## V2: DynamicNestedSampler + rslice, default stopping (runs=1)
+## Key problem: default stop (pfrac=1.0) focuses on posterior quality, not evidence.
+## Creditcard and TCGA hit maxcall without converging.
+
+| param | pima | creditcard | tcga |
+|-------|------|-----------|------|
+| sampler | DynamicNestedSampler | DynamicNestedSampler | DynamicNestedSampler |
+| sample | rslice | rslice | rslice |
+| nlive | 300 | 600 | 600 |
+| bound | multi | multi | multi |
+| stopping | default (pfrac=1.0) | default (pfrac=1.0) | default (pfrac=1.0) |
+| maxcall | 1000000 | 3000000 | 5000000 |
+
+V2 results (single run, seed=0):
+- pima:  logZ=-387.31, converged=1, runtime=314s, ncall=890K
+- creditcard: logZ=-106.29, converged=0, runtime=590s, ncall=3.00M (maxcall hit!)
+- tcga:  logZ=-419.76, converged=0, runtime=820s, ncall=5.00M (maxcall hit!)
+
+Conclusion: DNS with default posterior-focused stopping fails for d>=30.
+Evidence-focused weight/stop (pfrac=0.0) required for evidence estimation.

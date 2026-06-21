@@ -1,0 +1,34 @@
+## V3 (Final): Static NestedSampler, unified precision criterion (runs=30)
+##
+## Parameter selection rule:
+##   - dlogz=0.5 (standard conservative stopping)
+##   - nlive = ceil(H/sigma^2) targeting single-run sigma < 0.5
+##   - Sampling method: rwalk for D<=20, rslice for D>20 (dynesty FAQ recommendation)
+##
+## Comparison with V1: V1 used rwalk at all dimensions; at D=61 rwalk fails
+##   (logZ_std=2.82, BF uncertainty ~17x). V3 switches TCGA to rslice,
+##   reducing expected logZ_std to ~0.49 (BF uncertainty ~1.6x).
+
+| param | pima | creditcard | tcga |
+|-------|------|-----------|------|
+| sampler | NestedSampler | NestedSampler | NestedSampler |
+| sample | rwalk | rwalk | rslice |
+| walks | 30 | 30 | - |
+| dlogz | 0.5 | 0.5 | 0.5 |
+| nlive | 300 | 500 | 250 |
+| H (estimated) | 26.7 | 43.8 | 60.1 |
+| theoretical sigma | 0.30 | 0.30 | 0.49 |
+| maxcall | 1000000 | 3000000 | 8000000 |
+
+## Results (to be filled after run):
+##   pima:       (use V1 results, no re-run needed)
+##   creditcard: (use V1 results, no re-run needed)
+##   tcga:       (REQUIRES RUN, see command below)
+
+Run command (Windows Anaconda Prompt):
+  conda activate nested_sampling
+  cd D:\homeworkcode\统计计算\Marginal-Likelihood-calculation\nested Sampling
+  python experiments/run_experiments.py --method dynesty --dataset tcga --phase final --seed 1000
+
+After completion, copy summary:
+  copy results\dynesty\tcga\final_runs\summary.csv results\v3_rslice_dynamic_final\tcga_summary.csv
