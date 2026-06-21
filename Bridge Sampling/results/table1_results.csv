@@ -1,0 +1,10 @@
+﻿Dataset,Method,logZ,Runtime(s),Ncall,Converged,Note
+Pima (d = 9),Nested Sampling (dynesty),-387.49 +/- 0.28,27.5 +/- 1.2,252566,30/30,
+Pima (d = 9),Bridge Sampling (total),-387.51 +/- 0.013,17.6 +/- 2.2,152000,30/30,HMC 9.4s + Bridge 8.2s
+Pima (d = 9),Bridge Sampling (BS only),,8.2 +/- 1.5,20000,,bridge iteration phase
+CreditCard (d = 29),Nested Sampling (dynesty),-96.95 +/- 0.68,147.6 +/- 4.1,752203,30/30,
+CreditCard (d = 29),Bridge Sampling (total),-98.76 +/- 0.021,76.8 +/- 12.1,189000,30/30,HMC 68.1s + Bridge 8.7s
+CreditCard (d = 29),Bridge Sampling (BS only),,8.7 +/- 1.5,20000,,bridge iteration phase
+TCGA (d = 61),Nested Sampling (dynesty),-57.57 +/- 2.82,126.3 +/- 7.0,667975,30/30,
+TCGA (d = 61),Bridge Sampling (total),-72.59 +/- 0.047,160.8 (median),285000,30/30,HMC 137.4s + Bridge 19.8s; 2 HMC runs with system anomalies excluded
+TCGA (d = 61),Bridge Sampling (BS only),,19.8 +/- 3.2,25000,,bridge iteration phase

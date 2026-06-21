@@ -10,9 +10,11 @@ source("../src/data_loader.R")
 source("../src/bridge.R")
 source("../src/io_utils.R")
 
-run_single <- function(dataset, X, y, ndim, seed, n_proposal) {
+run_single <- function(dataset, X, y, ndim, seed, n_proposal, run_id, hmc_meta) {
   set.seed(seed)
-  posterior_samples <- load_posterior_samples(dataset)
+  posterior_samples <- load_posterior_samples(dataset, run_id = run_id)
+
+  hmc_row <- hmc_meta[run_id + 1, ]
 
   t0 <- proc.time()[3]
   result <- bridge_sampling(
@@ -21,16 +23,19 @@ run_single <- function(dataset, X, y, ndim, seed, n_proposal) {
     y = y,
     n_proposal = n_proposal
   )
-  runtime <- proc.time()[3] - t0
+  bs_runtime <- proc.time()[3] - t0
 
-  n_eff <- DATASETS[[dataset]]$n_post
+  n_eff <- nrow(posterior_samples)
 
   list(
     logz       = result$logz,
     logzerr    = result$logzerr,
     H          = NA_real_,
-    runtime    = runtime,
-    ncall      = n_eff + n_proposal,
+    runtime    = hmc_row$runtime + bs_runtime,
+    hmc_runtime = hmc_row$runtime,
+    bs_runtime  = bs_runtime,
+    ncall      = hmc_row$grad_calls + n_eff + n_proposal,
+    hmc_ncall   = hmc_row$grad_calls,
     n_iter     = result$iterations,
     eff_nlive  = NA_integer_,
     nlive_used = NA_integer_,
@@ -57,25 +62,27 @@ run_experiments <- function(datasets, phase = "test") {
                 paste(dim(dat$X), collapse = " x "),
                 dat$info$n_post))
 
+    hmc_meta <- load_hmc_metadata(dataset)
+
     all_metrics <- list()
 
     for (run_id in seq_len(phase_info$runs)) {
       seed <- BASE_SEED + (run_id - 1L) * 100L
-      metrics <- run_single(dataset, dat$X, dat$y, ndim, seed, N_PROPOSAL)
+      metrics <- run_single(dataset, dat$X, dat$y, ndim, seed, N_PROPOSAL, run_id - 1L, hmc_meta)
       all_metrics[[run_id]] <- metrics
       save_run(dataset, run_id - 1L, metrics, phase_dir = phase_info$phase_dir)
-      cat(sprintf("  run %d/%d | logZ = %.4f | iter = %d | %.1fs\n",
+      cat(sprintf("  run %d/%d | logZ = %.4f | iter = %d | HMC: %.1fs + BS: %.1fs = %.1fs\n",
                   run_id, phase_info$runs, metrics$logz,
-                  metrics$n_iter, metrics$runtime))
+                  metrics$n_iter, metrics$hmc_runtime, metrics$bs_runtime, metrics$runtime))
     }
 
     save_summary(dataset, all_metrics, phase_dir = phase_info$phase_dir)
 
     logz_vals <- sapply(all_metrics, `[[`, "logz")
     runtime_vals <- sapply(all_metrics, `[[`, "runtime")
-    cat(sprintf("  >> logZ = %.4f +/- %.4f | runtime = %.1f +/- %.1f s\n\n",
+    cat(sprintf("  >> logZ = %.4f +/- %.4f | runtime = %.1f +/- %.1f s (total)\n\n",
                 mean(logz_vals), sd(logz_vals),
-                mean(runtime_vals), sd(runtime_vals)))
+                median(runtime_vals), mad(runtime_vals)))
   }
 
   cat("=== All experiments completed ===\n")
